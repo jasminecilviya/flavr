@@ -25,3 +25,4 @@ build/
 npm-debug.log*
 
 backend/.env
+.vercel

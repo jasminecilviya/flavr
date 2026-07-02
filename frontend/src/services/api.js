@@ -1,9 +1,10 @@
 import axios from 'axios';
 
-// LOGIC: In dev, /api is proxied by Vite to backend.
-// In prod (Vercel), /api goes through the proxy function that injects OIDC token.
+// LOGIC: In dev (Vite proxy), use /api. In prod (Vercel), use VITE_API_URL.
+const BASE_URL = import.meta.env.VITE_API_URL || '/api';
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -16,6 +17,11 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
+    const data = err.response?.data;
+    // If response is not JSON (HTML from SSO/gateway), return structured error
+    if (typeof data === 'string') {
+      return Promise.reject({ response: { data: { message: 'Server unavailable' } } });
+    }
     if (err.response?.status === 401) {
       localStorage.removeItem('flavrToken');
       localStorage.removeItem('flavrUser');
@@ -39,8 +45,8 @@ export const authAPI = {
 export const dishAPI = {
   getAll: (params) => api.get('/dishes', { params }),
   getOne: (id) => api.get(`/dishes/${id}`),
-  create: (data) => api.post('/dishes', data, getUploadConfig()),
-  update: (id, data) => api.put(`/dishes/${id}`, data, getUploadConfig()),
+  create: (data) => api.post('/dishes', data, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  update: (id, data) => api.put(`/dishes/${id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } }),
   delete: (id) => api.delete(`/dishes/${id}`),
 };
 
@@ -65,7 +71,3 @@ export const adminAPI = {
   getUsers: () => api.get('/admin/users'),
   getOrders: () => api.get('/admin/orders'),
 };
-
-const getUploadConfig = () => ({
-  headers: { 'Content-Type': 'multipart/form-data' },
-});
