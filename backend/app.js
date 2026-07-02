@@ -3,7 +3,6 @@ const cors = require('cors');
 const path = require('path');
 const { errorHandler } = require('./middlewares/errorMiddleware');
 
-// Route imports
 const authRoutes = require('./routes/authRoutes');
 const dishRoutes = require('./routes/dishRoutes');
 const cartRoutes = require('./routes/cartRoutes');
@@ -13,8 +12,11 @@ const aiRoutes = require('./routes/aiRoutes');
 
 const app = express();
 
-// Middleware
-app.use(cors({ origin: process.env.CLIENT_URL || '*', credentials: true }));
+// LOGIC: In production (Vercel), CLIENT_URL is set in Vercel env vars
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'https://flavr.vercel.app',
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -29,15 +31,7 @@ app.use('/api/ai', aiRoutes);
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: '🟢 Flavr API running' }));
 
-// Serve frontend in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
-  app.get('*', (req, res) =>
-    res.sendFile(path.resolve(__dirname, '../frontend/dist', 'index.html'))
-  );
-}
-
-// Error handler (must be last)
+// Error handler
 app.use(errorHandler);
 
 module.exports = app;

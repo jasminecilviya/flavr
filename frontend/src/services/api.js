@@ -1,19 +1,22 @@
 import axios from 'axios';
 
-// Axios instance with interceptor for JWT
+// LOGIC: In dev (Vite proxy) it calls /api locally.
+// In prod (Vercel), VITE_API_URL points to the backend Vercel function URL.
+const API_URL = import.meta.env.VITE_API_URL || '/api';
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Attach token from localStorage on every request
+// Attach JWT token from localStorage
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('flavrToken');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// Handle 401 globally — clear token and redirect
+// Handle 401 globally
 api.interceptors.response.use(
   (res) => res,
   (err) => {
@@ -30,7 +33,6 @@ api.interceptors.response.use(
 
 export default api;
 
-// ─── Auth ────────────────────────────────────────────────
 export const authAPI = {
   register: (data) => api.post('/auth/register', data),
   login: (data) => api.post('/auth/login', data),
@@ -38,7 +40,6 @@ export const authAPI = {
   updateProfile: (data) => api.put('/auth/profile', data),
 };
 
-// ─── Dishes ───────────────────────────────────────────────
 export const dishAPI = {
   getAll: (params) => api.get('/dishes', { params }),
   getOne: (id) => api.get(`/dishes/${id}`),
@@ -47,14 +48,12 @@ export const dishAPI = {
   delete: (id) => api.delete(`/dishes/${id}`),
 };
 
-// ─── Cart ─────────────────────────────────────────────────
 export const cartAPI = {
   get: () => api.get('/cart'),
   add: (dishId, quantity) => api.post('/cart', { dishId, quantity }),
   remove: (itemId) => api.delete(`/cart/${itemId}`),
 };
 
-// ─── Orders ───────────────────────────────────────────────
 export const orderAPI = {
   create: (data) => api.post('/orders', data),
   getMy: () => api.get('/orders/myorders'),
@@ -62,12 +61,10 @@ export const orderAPI = {
   updateStatus: (id, status) => api.put(`/orders/${id}/status`, { status }),
 };
 
-// ─── AI ───────────────────────────────────────────────────
 export const aiAPI = {
   recommend: (prompt) => api.post('/ai/recommend', { prompt }),
 };
 
-// ─── Admin ────────────────────────────────────────────────
 export const adminAPI = {
   getUsers: () => api.get('/admin/users'),
   getOrders: () => api.get('/admin/orders'),
