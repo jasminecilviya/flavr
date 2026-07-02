@@ -1,19 +1,14 @@
-# Use Node.js 20 LTS
+# LOGIC: Railway deployment — uses Node 20, respects $PORT env
 FROM node:20-slim
 
 WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install --production
 
-# Copy source
 COPY . .
 
-# Expose the port
+# Railway sets PORT env automatically, our server.js uses process.env.PORT
 EXPOSE 5000
 
-# Start the server
 CMD ["node", "server.js"]
