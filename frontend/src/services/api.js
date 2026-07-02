@@ -1,22 +1,18 @@
 import axios from 'axios';
 
-// LOGIC: In dev (Vite proxy) it calls /api locally.
-// In prod (Vercel), VITE_API_URL points to the backend Vercel function URL.
-const API_URL = import.meta.env.VITE_API_URL || '/api';
-
+// LOGIC: In dev, /api is proxied by Vite to backend.
+// In prod (Vercel), /api goes through the proxy function that injects OIDC token.
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: '/api',
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Attach JWT token from localStorage
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('flavrToken');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// Handle 401 globally
 api.interceptors.response.use(
   (res) => res,
   (err) => {
