@@ -2,6 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const { errorHandler } = require('./middlewares/errorMiddleware');
 
+// LOGIC: Register all Mongoose models upfront so populate() works everywhere.
+require('./models/User');
+require('./models/Restaurant');
+require('./models/Menu');
+require('./models/Dish');
+require('./models/Cart');
+require('./models/Order');
+
 const authRoutes = require('./routes/authRoutes');
 const dishRoutes = require('./routes/dishRoutes');
 const cartRoutes = require('./routes/cartRoutes');
