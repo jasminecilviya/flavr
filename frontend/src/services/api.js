@@ -1,12 +1,13 @@
 import axios from 'axios';
 
-// LOGIC: In dev (Vite proxy), use /api. In prod (Vercel), /api goes through proxy function.
-const BASE_URL = '/api';
+// LOGIC: In dev, Vite proxies /api to localhost:5000.
+// In prod (Vercel), calls backend directly via VITE_API_URL.
+const BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 const api = axios.create({
   baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json' },
-  timeout: 15000,
+  timeout: 20000,
 });
 
 api.interceptors.request.use((config) => {
@@ -18,13 +19,13 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
+    const msg = err.response?.data?.message || err.message || 'Something went wrong';
     if (err.response?.status === 401) {
       localStorage.removeItem('flavrToken');
       localStorage.removeItem('flavrUser');
       if (window.location.pathname !== '/login') window.location.href = '/login';
     }
-    const msg = err.response?.data?.message || err.message || 'Request failed';
-    return Promise.reject({ ...err, message: msg });
+    return Promise.reject(new Error(msg));
   }
 );
 
