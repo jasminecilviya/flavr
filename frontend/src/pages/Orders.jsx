@@ -12,7 +12,7 @@ export default function Orders() {
 
   useEffect(() => {
     orderAPI.getMy().then(({ data }) => {
-      setOrders(data);
+      setOrders(Array.isArray(data) ? data : []);
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);

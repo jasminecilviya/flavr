@@ -27,7 +27,7 @@ export default function Menu() {
     if (priceRange.max) params.maxPrice = priceRange.max;
 
     dishAPI.getAll(params).then(({ data }) => {
-      setDishes(data);
+      setDishes(Array.isArray(data) ? data : []);
       setLoading(false);
     }).catch(() => setLoading(false));
   }, [search, category, priceRange]);

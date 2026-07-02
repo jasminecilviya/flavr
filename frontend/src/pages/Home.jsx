@@ -28,7 +28,7 @@ export default function Home() {
 
   useEffect(() => {
     dishAPI.getAll({ minRating: 4 }).then(({ data }) => {
-      setDishes(data.slice(0, 8));
+      setDishes(Array.isArray(data) ? data.slice(0, 8) : []);
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);

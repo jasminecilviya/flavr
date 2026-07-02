@@ -23,7 +23,7 @@ export const CartProvider = ({ children }) => {
   const fetchCart = async () => {
     try {
       const { data } = await cartAPI.get();
-      setCartItems(data.items || []);
+      setCartItems(Array.isArray(data?.items) ? data.items : []);
     } catch { /* cart may not exist yet */ }
   };
 
@@ -32,7 +32,7 @@ export const CartProvider = ({ children }) => {
     setLoading(true);
     try {
       const { data } = await cartAPI.add(dishId, quantity);
-      setCartItems(data.items || []);
+      setCartItems(Array.isArray(data?.items) ? data.items : []);
       toast.success('Added to cart!');
     } finally {
       setLoading(false);
@@ -43,7 +43,7 @@ export const CartProvider = ({ children }) => {
     setLoading(true);
     try {
       const { data } = await cartAPI.remove(itemId);
-      setCartItems(data.items || []);
+      setCartItems(Array.isArray(data?.items) ? data.items : []);
       toast.info('Removed from cart');
     } finally {
       setLoading(false);

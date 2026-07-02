@@ -1,11 +1,12 @@
 import axios from 'axios';
 
-// LOGIC: In dev (Vite proxy), use /api. In prod (Vercel), use VITE_API_URL.
-const BASE_URL = import.meta.env.VITE_API_URL || '/api';
+// LOGIC: In dev (Vite proxy), use /api. In prod (Vercel), /api goes through proxy function.
+const BASE_URL = '/api';
 
 const api = axios.create({
   baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json' },
+  timeout: 15000,
 });
 
 api.interceptors.request.use((config) => {
@@ -17,19 +18,13 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    const data = err.response?.data;
-    // If response is not JSON (HTML from SSO/gateway), return structured error
-    if (typeof data === 'string') {
-      return Promise.reject({ response: { data: { message: 'Server unavailable' } } });
-    }
     if (err.response?.status === 401) {
       localStorage.removeItem('flavrToken');
       localStorage.removeItem('flavrUser');
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
-      }
+      if (window.location.pathname !== '/login') window.location.href = '/login';
     }
-    return Promise.reject(err);
+    const msg = err.response?.data?.message || err.message || 'Request failed';
+    return Promise.reject({ ...err, message: msg });
   }
 );
 

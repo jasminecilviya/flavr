@@ -14,9 +14,9 @@ export default function Admin() {
 
   useEffect(() => {
     Promise.all([
-      adminAPI.getOrders().then(r => setOrders(r.data)).catch(() => {}),
-      adminAPI.getUsers().then(r => setUsers(r.data)).catch(() => {}),
-      dishAPI.getAll().then(r => setDishes(r.data)).catch(() => {}),
+      adminAPI.getOrders().then(r => setOrders(Array.isArray(r.data) ? r.data : [])).catch(() => {}),
+      adminAPI.getUsers().then(r => setUsers(Array.isArray(r.data) ? r.data : [])).catch(() => {}),
+      dishAPI.getAll().then(r => setDishes(Array.isArray(r.data) ? r.data : [])).catch(() => {}),
     ]).finally(() => setLoading(false));
   }, []);
 
