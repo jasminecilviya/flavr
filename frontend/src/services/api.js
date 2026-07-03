@@ -60,7 +60,7 @@ export const orderAPI = {
 };
 
 export const aiAPI = {
-  recommend: (prompt) => api.post('/ai/recommend', { prompt }),
+  recommend: (prompt, history) => api.post('/ai/recommend', { prompt, history }),
 };
 
 export const adminAPI = {
