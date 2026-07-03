@@ -10,6 +10,8 @@ require('./models/Menu');
 require('./models/Dish');
 require('./models/Cart');
 require('./models/Order');
+require('./models/Favorite');
+require('./models/Review');
 
 const authRoutes = require('./routes/authRoutes');
 const dishRoutes = require('./routes/dishRoutes');
@@ -18,6 +20,8 @@ const orderRoutes = require('./routes/orderRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const restaurantRoutes = require('./routes/restaurantRoutes');
+const favoriteRoutes = require('./routes/favoriteRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
 
 const app = express();
 
@@ -33,19 +37,19 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/restaurants', restaurantRoutes);
+app.use('/api/favorites', favoriteRoutes);
+app.use('/api/reviews', reviewRoutes);
 
-// Serve frontend static files
+// Serve frontend
 const publicPaths = [
   path.join(__dirname, 'public'),
   path.join(process.cwd(), 'public'),
   '/app/public',
 ];
-
 let publicDir = null;
 for (const p of publicPaths) {
   if (fs.existsSync(p)) { publicDir = p; break; }
 }
-
 if (publicDir) {
   console.log('Serving static from:', publicDir);
   app.use(express.static(publicDir));

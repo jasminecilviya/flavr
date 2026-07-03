@@ -74,3 +74,14 @@ export const restaurantAPI = {
 };
 
 export const CATEGORIES_LIST = ['Breakfast', 'Lunch', 'Dinner', 'Beverages'];
+
+export const favoriteAPI = {
+  getAll: () => api.get('/favorites'),
+  getIds: () => api.get('/favorites/ids'),
+  toggle: (dishId) => api.post(`/favorites/${dishId}`),
+};
+
+export const reviewAPI = {
+  get: (dishId) => api.get(`/reviews/${dishId}`),
+  create: (dishId, data) => api.post(`/reviews/${dishId}`, data),
+};
