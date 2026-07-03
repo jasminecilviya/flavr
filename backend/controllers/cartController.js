@@ -4,9 +4,7 @@ const { asyncHandler } = require('../middlewares/errorMiddleware');
 // GET /api/cart
 exports.getCart = asyncHandler(async (req, res) => {
   let cart = await Cart.findOne({ user: req.user._id }).populate('items.dish');
-  if (!cart) {
-    cart = await Cart.create({ user: req.user._id, items: [] });
-  }
+  if (!cart) cart = await Cart.create({ user: req.user._id, items: [] });
   res.json(cart);
 });
 
@@ -14,9 +12,7 @@ exports.getCart = asyncHandler(async (req, res) => {
 exports.addToCart = asyncHandler(async (req, res) => {
   const { dishId, quantity } = req.body;
   let cart = await Cart.findOne({ user: req.user._id });
-  if (!cart) {
-    cart = await Cart.create({ user: req.user._id, items: [] });
-  }
+  if (!cart) cart = await Cart.create({ user: req.user._id, items: [] });
 
   const existing = cart.items.find((i) => i.dish.toString() === dishId);
   if (existing) {
@@ -24,6 +20,26 @@ exports.addToCart = asyncHandler(async (req, res) => {
   } else {
     cart.items.push({ dish: dishId, quantity: quantity || 1 });
   }
+  await cart.save();
+  cart = await Cart.findOne({ user: req.user._id }).populate('items.dish');
+  res.json(cart);
+});
+
+// PUT /api/cart/:itemId — update quantity for specific item
+exports.updateCartItem = asyncHandler(async (req, res) => {
+  const { quantity } = req.body;
+  let cart = await Cart.findOne({ user: req.user._id });
+  if (!cart) return res.status(404).json({ message: 'Cart not found' });
+
+  const item = cart.items.id(req.params.itemId);
+  if (!item) return res.status(404).json({ message: 'Item not found in cart' });
+
+  if (quantity <= 0) {
+    cart.items.pull({ _id: req.params.itemId });
+  } else {
+    item.quantity = quantity;
+  }
+
   await cart.save();
   cart = await Cart.findOne({ user: req.user._id }).populate('items.dish');
   res.json(cart);

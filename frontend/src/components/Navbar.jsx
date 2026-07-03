@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, LogOut, Menu, X, Sparkles, Sun, Moon, Heart } from 'lucide-react';
+import { ShoppingCart, User, LogOut, Menu, X, Sparkles, Sun, Moon, Heart, ShoppingBag } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
@@ -35,6 +35,11 @@ export default function Navbar() {
             {user && (
               <Link to="/favorites" className="flex items-center gap-1 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-orange-500 transition-colors">
                 <Heart size={16} /> Favorites
+              </Link>
+            )}
+            {user && (
+              <Link to="/orders" className="flex items-center gap-1 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-orange-500 transition-colors">
+                <ShoppingBag size={16} /> Orders
               </Link>
             )}
             {isAdmin && (
@@ -89,7 +94,9 @@ export default function Navbar() {
                 <Link to="/favorites" onClick={() => setOpen(false)} className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-300">
                   <Heart size={16} /> Favorites
                 </Link>
-                <Link to="/orders" onClick={() => setOpen(false)} className="block text-sm font-medium text-gray-600 dark:text-gray-300">Orders</Link>
+                <Link to="/orders" onClick={() => setOpen(false)} className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-300">
+                  <ShoppingBag size={16} /> Orders
+                </Link>
               </>
             )}
             {isAdmin && (

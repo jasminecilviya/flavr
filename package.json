@@ -1,15 +1,16 @@
 {
   "name": "flavr",
-  "version": "1.0.0",
-  "description": "Flavr - AI-Powered Food Delivery Platform",
+  "version": "2.0.0",
+  "description": "Flavr - AI-Powered Food Discovery Platform",
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
-    "seed": "cd backend && npm run seed",
+    "build": "cd frontend && npm run build",
+    "seed": "cd backend && node seeder.js",
     "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
-    "build": "cd frontend && npm run build"
+    "start": "cd backend && node server.js"
   },
   "devDependencies": {
     "concurrently": "^9.0.1"

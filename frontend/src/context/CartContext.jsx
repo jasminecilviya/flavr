@@ -14,7 +14,6 @@ export const CartProvider = ({ children }) => {
 
   const cartTotal = cartItems.reduce((sum, i) => sum + (i.dish?.price || 0) * i.quantity, 0);
 
-  // Fetch cart when user logs in
   useEffect(() => {
     if (user) fetchCart();
     else setCartItems([]);
@@ -34,9 +33,16 @@ export const CartProvider = ({ children }) => {
       const { data } = await cartAPI.add(dishId, quantity);
       setCartItems(Array.isArray(data?.items) ? data.items : []);
       toast.success('Added to cart!');
-    } finally {
-      setLoading(false);
-    }
+    } catch { toast.error('Failed to add'); }
+    finally { setLoading(false); }
+  };
+
+  const updateQuantity = async (itemId, quantity) => {
+    if (quantity <= 0) return removeFromCart(itemId);
+    try {
+      const { data } = await cartAPI.updateQuantity(itemId, quantity);
+      setCartItems(Array.isArray(data?.items) ? data.items : []);
+    } catch { toast.error('Failed to update'); }
   };
 
   const removeFromCart = async (itemId) => {
@@ -45,13 +51,12 @@ export const CartProvider = ({ children }) => {
       const { data } = await cartAPI.remove(itemId);
       setCartItems(Array.isArray(data?.items) ? data.items : []);
       toast.info('Removed from cart');
-    } finally {
-      setLoading(false);
-    }
+    } catch { toast.error('Failed to remove'); }
+    finally { setLoading(false); }
   };
 
   return (
-    <CartContext.Provider value={{ cartItems, cartTotal, loading, addToCart, removeFromCart, fetchCart }}>
+    <CartContext.Provider value={{ cartItems, cartTotal, loading, addToCart, updateQuantity, removeFromCart, fetchCart }}>
       {children}
     </CartContext.Provider>
   );
