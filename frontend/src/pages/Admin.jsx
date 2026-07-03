@@ -364,25 +364,47 @@ export default function Admin() {
                   </div>
                 </div>
 
+                {/* Image Picker */}
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium mb-2">Image</label>
+                  <div className="flex items-center gap-3">
+                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0 border-2 border-dashed border-gray-300 dark:border-gray-600">
+                      {form.imageUrl ? (
+                        <img src={form.imageUrl} alt="" className="w-full h-full object-cover" onError={e => { e.target.style.display = 'none'; }} />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-[10px]">No img</div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <input value={form.imageUrl || ''} onChange={e => setForm({...form, imageUrl: e.target.value})}
+                        className="input-flavr text-sm" placeholder="https://images.unsplash.com/..." />
+                    </div>
+                  </div>
+                  <div className="flex gap-1.5 mt-2 overflow-x-auto pb-1">
+                    {[
+                      'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=200&h=200&fit=crop',
+                      'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&h=200&fit=crop',
+                      'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=200&h=200&fit=crop',
+                      'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=200&h=200&fit=crop',
+                      'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=200&h=200&fit=crop',
+                    ].map(url => (
+                      <button key={url} onClick={() => setForm({...form, imageUrl: url})}
+                        className="w-9 h-9 rounded-lg overflow-hidden flex-shrink-0 border-2 border-transparent hover:border-orange-500 transition-all hover:scale-110">
+                        <img src={url} alt="" className="w-full h-full object-cover" loading="lazy" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Tags */}
-                <div>
-                  <label className="block text-sm font-medium mb-1">Image URL</label>
-                  <input value={form.imageUrl || ""} onChange={e => setForm({...form, imageUrl: e.target.value})}
-                    className="input-flavr" placeholder="https://images.unsplash.com/..." />
-                </div>
-                <div>
+                <div className="col-span-2">
                   <label className="block text-sm font-medium mb-2">Tags</label>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Image URL</label>
-                  <input value={form.imageUrl || ""} onChange={e => setForm({...form, imageUrl: e.target.value})}
-                    className="input-flavr" placeholder="https://images.unsplash.com/..." />
-                </div>
                   <div className="flex flex-wrap gap-2">
                     {TAGS_LIST.map(t => (
                       <button key={t} onClick={() => toggleTag(t)}
                         className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                           form.tags.includes(t)
-                            ? 'bg-orange-500 text-white'
+                            ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20'
                             : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200'
                         }`}>{t}</button>
                     ))}
