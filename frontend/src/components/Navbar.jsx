@@ -4,6 +4,7 @@ import { ShoppingCart, User, LogOut, Menu, X, Sparkles, Sun, Moon, Heart, Shoppi
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
+import { FlavrLogoFull } from '../assets/FlavrLogo';
 
 export default function Navbar() {
   const { user, isAdmin, logout } = useAuth();
@@ -20,8 +21,8 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 bg-white/80 dark:bg-[#0A0F1E]/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="text-2xl font-black bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">flavr</span>
+          <Link to="/" className="flex items-center gap-2 group">
+            <FlavrLogoFull size={28} className="transition-opacity group-hover:opacity-80" />
           </Link>
 
           {/* Desktop Nav */}
