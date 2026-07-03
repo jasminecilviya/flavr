@@ -1,7 +1,7 @@
 const Dish = require('../models/Dish');
 const { asyncHandler } = require('../middlewares/errorMiddleware');
 
-// GET /api/dishes — with filters
+// GET /api/dishes
 exports.getDishes = asyncHandler(async (req, res) => {
   const filter = { isAvailable: true };
   if (req.query.category) filter.category = req.query.category;
@@ -9,6 +9,8 @@ exports.getDishes = asyncHandler(async (req, res) => {
   if (req.query.minPrice) filter.price = { ...filter.price, $gte: Number(req.query.minPrice) };
   if (req.query.maxPrice) filter.price = { ...filter.price, $lte: Number(req.query.maxPrice) };
   if (req.query.minRating) filter.rating = { $gte: Number(req.query.minRating) };
+  // admin can see all
+  if (req.query.admin === 'true') delete filter.isAvailable;
 
   const dishes = await Dish.find(filter)
     .populate('restaurant', 'name imageUrl')
@@ -28,10 +30,14 @@ exports.getDish = asyncHandler(async (req, res) => {
 
 // POST /api/dishes — Admin
 exports.createDish = asyncHandler(async (req, res) => {
-  const dish = await Dish.create({
-    ...req.body,
-    imageUrl: req.file?.path,
-  });
+  const data = { ...req.body };
+  if (req.file) data.imageUrl = req.file.path;
+  // Parse JSON fields if sent as string (multipart)
+  if (typeof data.tags === 'string') data.tags = JSON.parse(data.tags);
+  if (typeof data.price === 'string') data.price = Number(data.price);
+  if (typeof data.rating === 'string') data.rating = Number(data.rating);
+
+  const dish = await Dish.create(data);
   res.status(201).json(dish);
 });
 
@@ -39,6 +45,10 @@ exports.createDish = asyncHandler(async (req, res) => {
 exports.updateDish = asyncHandler(async (req, res) => {
   const data = { ...req.body };
   if (req.file) data.imageUrl = req.file.path;
+  if (typeof data.tags === 'string') data.tags = JSON.parse(data.tags);
+  if (typeof data.price === 'string') data.price = Number(data.price);
+  if (typeof data.rating === 'string') data.rating = Number(data.rating);
+
   const dish = await Dish.findByIdAndUpdate(req.params.id, data, { new: true, runValidators: true });
   if (!dish) return res.status(404).json({ message: 'Dish not found' });
   res.json(dish);

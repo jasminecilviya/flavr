@@ -67,3 +67,10 @@ export const adminAPI = {
   getUsers: () => api.get('/admin/users'),
   getOrders: () => api.get('/admin/orders'),
 };
+
+export const restaurantAPI = {
+  getAll: () => api.get('/restaurants'),
+  create: (data) => api.post('/restaurants', data, { headers: { 'Content-Type': 'multipart/form-data' } }),
+};
+
+export const CATEGORIES_LIST = ['Breakfast', 'Lunch', 'Dinner', 'Beverages'];
