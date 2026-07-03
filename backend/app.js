@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const { errorHandler } = require('./middlewares/errorMiddleware');
 
+// Register all models
 require('./models/User');
 require('./models/Restaurant');
 require('./models/Menu');
@@ -12,6 +13,7 @@ require('./models/Cart');
 require('./models/Order');
 require('./models/Favorite');
 require('./models/Review');
+require('./models/Coupon');
 
 const authRoutes = require('./routes/authRoutes');
 const dishRoutes = require('./routes/dishRoutes');
@@ -22,14 +24,18 @@ const aiRoutes = require('./routes/aiRoutes');
 const restaurantRoutes = require('./routes/restaurantRoutes');
 const favoriteRoutes = require('./routes/favoriteRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
+const couponRoutes = require('./routes/couponRoutes');
 
 const app = express();
 
 app.use(cors({ origin: '*', credentials: true }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-app.get('/api/health', (req, res) => res.json({ status: '🟢 Flavr API' }));
+// Health check
+app.get('/api/health', (req, res) => res.json({ status: '🟢 Flavr API', version: '3.0.0' }));
+
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/dishes', dishRoutes);
 app.use('/api/cart', cartRoutes);
@@ -39,6 +45,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/restaurants', restaurantRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/coupons', couponRoutes);
 
 // Serve frontend
 const publicPaths = [

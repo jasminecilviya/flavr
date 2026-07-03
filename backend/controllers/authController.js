@@ -15,6 +15,8 @@ exports.register = asyncHandler(async (req, res) => {
     email: user.email,
     role: user.role,
     preferences: user.preferences,
+    allergies: user.allergies,
+    language: user.language,
     token: generateToken(user),
   });
 });
@@ -32,6 +34,8 @@ exports.login = asyncHandler(async (req, res) => {
     email: user.email,
     role: user.role,
     preferences: user.preferences,
+    allergies: user.allergies,
+    language: user.language,
     token: generateToken(user),
   });
 });
@@ -42,11 +46,16 @@ exports.getProfile = asyncHandler(async (req, res) => {
   res.json(user);
 });
 
-// PUT /api/auth/profile — update preferences (for AI context)
+// PUT /api/auth/profile — update preferences, allergies, language (for AI context)
 exports.updateProfile = asyncHandler(async (req, res) => {
   const user = await User.findByIdAndUpdate(
     req.user._id,
-    { name: req.body.name, preferences: req.body.preferences },
+    {
+      name: req.body.name,
+      preferences: req.body.preferences,
+      allergies: req.body.allergies,
+      language: req.body.language,
+    },
     { new: true }
   );
   res.json(user);

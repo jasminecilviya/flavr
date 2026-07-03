@@ -13,7 +13,6 @@ export const AuthProvider = ({ children }) => {
 
   const isAdmin = user?.role === 'admin';
 
-  // Persist auth state
   const persist = (userData, jwt) => {
     setUser(userData);
     setToken(jwt);
